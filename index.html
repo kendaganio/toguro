@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+    <script src="./dist/toguro.js"></script>
+  </head>
+  <body>
+    <div id="form-mount"></div>
+
+    <script charset="utf-8">
+      var schema = {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "age": {
+            "type": "integer"
+          },
+          "description": {
+            "type": "string"
+          },
+          "done": {
+            "type": "boolean"
+          },
+          "rating": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      }
+
+      var submitHandler = function(formData) {
+        console.log('HTML:', formData)
+      }
+
+      var el = document.getElementById('form-mount')
+      toguro.render(el, {
+        schema: schema,
+        submitHandler, submitHandler
+      });
+    </script>
+  </body>
+</html>
