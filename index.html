@@ -5,34 +5,59 @@
     <meta name="viewport" content="width=device-width" />
     <title></title>
     <script src="./dist/toguro.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/corgicss/css/corgi.css" type="text/css" media="screen" charset="utf-8">
   </head>
   <body>
-    <div id="form-mount"></div>
+    <div class="container">
+      <div class="columns">
+        <div class="column">
+          <form class="form" accept-charset="utf-8">
+            <fieldset id="" class="">
+              <textarea id="schema-text" style="height: 80vh">
+              </textarea>
+            </fieldset>
+          </form> 
+          <button class="button -primary" id="generate">Generate ----></button>
+        </div>
+        <div class="column">
+          <div id="form-mount" style="width: 600px; margin: 70px auto"></div>
+        </div>
+      </div>
+    </div>
 
     <script charset="utf-8">
       var schema = {
         "type": "object",
         "properties": {
           "name": {
-            "type": "string"
+            "type": "string",
+            "title": "Name",
           },
           "age": {
-            "type": "integer"
+            "type": "integer",
+            "title": "Age",
           },
           "description": {
-            "type": "string"
+            "type": "string",
+            "title": "Description",
           },
           "done": {
-            "type": "boolean"
+            "type": "boolean",
+            "title": "Done",
           },
           "rating": {
-            "type": "integer"
+            "type": "integer",
+            "title": "Rating",
           }
         },
         "required": [
           "name"
         ]
       }
+
+      var textArea = document.querySelector("#schema-text")
+      var jsonSchema = JSON.stringify(schema, undefined, 2).replace('<br>', /\r?\n/g)
+      textArea.value = jsonSchema
 
       var submitHandler = function(formData) {
         console.log('HTML:', formData)
@@ -41,8 +66,19 @@
       var el = document.getElementById('form-mount')
       toguro.render(el, {
         schema: schema,
-        submitHandler, submitHandler
+        submitHandler: submitHandler
       });
+
+      var generate = document.querySelector("#generate")
+      generate.onclick = function(e) {
+        el.innerHTML = ""
+        toguro.render(el, {
+          schema: JSON.parse(textArea.value),
+          submitHandler: submitHandler
+        })
+      }
+
+
     </script>
   </body>
 </html>
