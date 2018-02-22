@@ -97,26 +97,35 @@ var whatInputType = {
   'boolean': 'checkbox',
   'integer': 'number'
 };
+var templates = {
+  label: "<label class='{{ klass }}-label' for='{{ for }}'> {{ title }} </label>",
+  input: "<input id='{{ id }}' type='{{ type }}' name='{{ key }}' class='{{ klass }}'/>",
+  submit: "<input type=\"submit\" class='{{ klass }}' value='{{ value }}'/>"
+};
+
+function textToElement(text) {
+  return document.createRange().createContextualFragment(text);
+}
 
 function getRenderer(type) {
   var renderers = {
     label: function label(key, value) {
-      var template = "<label class='{{key}}-label' for='{{ for }}'> {{ title }} </label>";
-      var div = document.createElement('div');
-
-      var rendered = _mustache.default.render(template, _extends({}, value, {
+      var rendered = _mustache.default.render(templates['label'], _extends({}, value, {
         key: key,
+        klass: key,
         for: "".concat(key, "-field")
       }));
 
-      div.innerHTML = rendered;
-      return div.firstElementChild;
+      return textToElement(rendered);
     },
     text: function text(key, value) {
-      var input = document.createElement('input');
-      input.setAttribute('type', whatInputType[value.type]);
-      input.setAttribute('id', "".concat(key, "-field"));
-      return input;
+      var rendered = _mustache.default.render(templates['input'], {
+        key: key,
+        type: whatInputType[value.type],
+        id: "".concat(key, "-field")
+      });
+
+      return textToElement(rendered);
     },
     checkbox: function checkbox(key, value) {
       this['text'](key, value);
@@ -155,11 +164,11 @@ var render = function render(el, _ref) {
     fieldSet.insertAdjacentElement('beforeend', inputEl);
   }); // add submit button
 
-  var submitButton = document.createElement('input');
-  submitButton.setAttribute('type', 'submit');
-  submitButton.className = 'button -primary';
-  submitButton.value = 'Submit!';
-  fieldSet.insertAdjacentElement('beforeend', submitButton);
+  var submitButton = textToElement(_mustache.default.render(templates['submit'], {
+    klass: 'button -primary',
+    value: 'Submit!'
+  }));
+  fieldSet.appendChild(submitButton);
   form.insertAdjacentElement('beforeend', fieldSet); //
 
   el.insertAdjacentElement('beforeend', form); // createEventHandlers

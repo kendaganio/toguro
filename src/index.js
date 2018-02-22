@@ -7,27 +7,37 @@ const whatInputType = {
   'integer': 'number'
 }
 
+const templates = {
+  label: `<label class='{{ klass }}-label' for='{{ for }}'> {{ title }} </label>`,
+  input: `<input id='{{ id }}' type='{{ type }}' name='{{ key }}' class='{{ klass }}'/>`,
+  submit: `<input type="submit" class='{{ klass }}' value='{{ value }}'/>`
+}
+
+function textToElement (text) {
+  return document.createRange().createContextualFragment(text)
+}
+
 function getRenderer (type) {
   const renderers = {
     label (key, value) {
-      const template = `<label class='{{key}}-label' for='{{ for }}'> {{ title }} </label>`
-
-      const div = document.createElement('div')
-      const rendered = Mustache.render(template, {
+      const rendered = Mustache.render(templates['label'], {
         ...value,
         key,
+        klass: key,
         for: `${key}-field`
       })
 
-      div.innerHTML = rendered
-      return div.firstElementChild
+      return textToElement(rendered)
     },
 
     text (key, value) {
-      const input = document.createElement('input')
-      input.setAttribute('type', whatInputType[value.type])
-      input.setAttribute('id', `${key}-field`)
-      return input
+      const rendered = Mustache.render(templates['input'], {
+        key,
+        type: whatInputType[value.type],
+        id: `${key}-field`
+      })
+
+      return textToElement(rendered)
     },
 
     checkbox (key, value) {
@@ -70,12 +80,9 @@ export const render = (el, { schema: { properties }, submitHandler }) => {
   })
 
   // add submit button
-  const submitButton = document.createElement('input')
-  submitButton.setAttribute('type', 'submit')
-  submitButton.className = 'button -primary'
-  submitButton.value = 'Submit!'
+  const submitButton = textToElement(Mustache.render(templates['submit'], { klass: 'button -primary', value: 'Submit!' }))
 
-  fieldSet.insertAdjacentElement('beforeend', submitButton)
+  fieldSet.appendChild(submitButton)
   form.insertAdjacentElement('beforeend', fieldSet)
   //
   el.insertAdjacentElement('beforeend', form)
