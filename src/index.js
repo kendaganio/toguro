@@ -21,23 +21,20 @@ export const render = (el, { schema: { properties }, submitHandler }) => {
   if (!(el instanceof Element)) {
     throw new Error('el should be a valid HTML Element')
   }
-  const fieldSet = dom.fieldset()
-  // createElements
-  Object.keys(properties).forEach(key => {
-    const inputEl = createFormElement(key, properties[key])
-    fieldSet.insertAdjacentElement('beforeend', inputEl)
-  })
 
-  const submitButton = dom.input({type: 'submit', class: 'button -primary'})
-  fieldSet.appendChild(submitButton)
-
-  const form = dom.form({class: 'form'}, fieldSet)
-
-  el.appendChild(form)
+  const elements = Object.keys(properties).map(key => createFormElement(key, properties[key]))
+  const form = dom.form({class: 'form'},
+    dom.fieldset({},
+      ...elements,
+      dom.input({type: 'submit', class: 'button -primary'})
+    )
+  )
 
   // createEventHandlers
   form.onsubmit = (event) => {
     event.preventDefault()
     submitHandler('gago')
   }
+
+  el.appendChild(form)
 }

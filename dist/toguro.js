@@ -91,6 +91,8 @@ var _dom = _interopRequireDefault(__webpack_require__(2));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 
 var whatInputType = {
@@ -121,31 +123,24 @@ var render = function render(el, _ref) {
     throw new Error('el should be a valid HTML Element');
   }
 
-  var fieldSet = _dom.default.fieldset(); // createElements
-
-
-  Object.keys(properties).forEach(function (key) {
-    var inputEl = createFormElement(key, properties[key]);
-    fieldSet.insertAdjacentElement('beforeend', inputEl);
+  var elements = Object.keys(properties).map(function (key) {
+    return createFormElement(key, properties[key]);
   });
-
-  var submitButton = _dom.default.input({
-    type: 'submit',
-    class: 'button -primary'
-  });
-
-  fieldSet.appendChild(submitButton);
 
   var form = _dom.default.form({
     class: 'form'
-  }, fieldSet);
+  }, _dom.default.fieldset.apply(_dom.default, [{}].concat(_toConsumableArray(elements), [_dom.default.input({
+    type: 'submit',
+    class: 'button -primary'
+  })]))); // createEventHandlers
 
-  el.appendChild(form); // createEventHandlers
 
   form.onsubmit = function (event) {
     event.preventDefault();
     submitHandler('gago');
   };
+
+  el.appendChild(form);
 };
 
 exports.render = render;
@@ -217,6 +212,16 @@ exports.default = _default;
 
 var htmlTags = ['input', 'label', 'div', 'form', 'fieldset'];
 
+var makeBabies = function makeBabies(fragment, children) {
+  children.forEach(function (child) {
+    if (typeof child === 'string') {
+      child = document.createTextNode(child);
+    }
+
+    fragment.appendChild(child);
+  });
+};
+
 var dom = function dom(tag) {
   var attrs = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
   var el = document.createElement(tag);
@@ -229,13 +234,7 @@ var dom = function dom(tag) {
     children[_key - 2] = arguments[_key];
   }
 
-  children.forEach(function (child) {
-    if (typeof child === 'string') {
-      child = document.createTextNode(child);
-    }
-
-    fragment.appendChild(child);
-  });
+  makeBabies(fragment, children);
   el.appendChild(fragment);
   return el;
 };
