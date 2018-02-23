@@ -98,9 +98,10 @@ var whatInputType = {
   'integer': 'number'
 };
 var templates = {
-  label: "<label class='{{ klass }}-label' for='{{ for }}'> {{ title }} </label>",
-  input: "<input id='{{ id }}' type='{{ type }}' name='{{ key }}' class='{{ klass }}'/>",
-  submit: "<input type=\"submit\" class='{{ klass }}' value='{{ value }}'/>"
+  label: "<label class='{{ key }}-label' for='{{ key }}-field'> {{ title }}</label>",
+  input: "<input id='{{ key }}-field' type='{{ type }}' name='{{ key }}' class='{{ klass }}'/>",
+  submit: "<input type=\"submit\" class='{{ klass }}' value='{{ value }}'/>",
+  checkbox: "<label class='{{ key }}-label' for='{{ key }}-field'>{{> input }} {{ title }}</label>"
 };
 
 function textToElement(text) {
@@ -111,9 +112,7 @@ function getRenderer(type) {
   var renderers = {
     label: function label(key, value) {
       var rendered = _mustache.default.render(templates['label'], _extends({}, value, {
-        key: key,
-        klass: key,
-        for: "".concat(key, "-field")
+        key: key
       }));
 
       return textToElement(rendered);
@@ -121,17 +120,28 @@ function getRenderer(type) {
     text: function text(key, value) {
       var rendered = _mustache.default.render(templates['input'], {
         key: key,
-        type: whatInputType[value.type],
-        id: "".concat(key, "-field")
+        type: whatInputType[value.type]
       });
 
       return textToElement(rendered);
     },
     checkbox: function checkbox(key, value) {
-      this['text'](key, value);
+      var rendered = _mustache.default.render(templates['checkbox'], _extends({}, value, {
+        key: key,
+        type: whatInputType[value.type]
+      }), {
+        input: templates['input']
+      });
+
+      return textToElement(rendered);
     },
     number: function number(key, value) {
-      this['text'](key, value);
+      var rendered = _mustache.default.render(templates['input'], {
+        key: key,
+        type: whatInputType[value.type]
+      });
+
+      return textToElement(rendered);
     }
   };
   return renderers[type];
@@ -141,7 +151,7 @@ var createFormElement = function createFormElement(key, value) {
   var div = document.createElement('div');
   div.className = 'form-group';
   div.appendChild(getRenderer('label')(key, value));
-  div.appendChild(getRenderer('text')(key, value));
+  div.appendChild(getRenderer(whatInputType[value.type])(key, value));
   return div;
 };
 

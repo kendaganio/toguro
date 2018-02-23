@@ -4,13 +4,14 @@ const whatInputType = {
 // 'json-schema': 'input[type=]'
   'string': 'text',
   'boolean': 'checkbox',
-  'integer': 'number'
+  'integer': 'number',
 }
 
 const templates = {
-  label: `<label class='{{ klass }}-label' for='{{ for }}'> {{ title }} </label>`,
-  input: `<input id='{{ id }}' type='{{ type }}' name='{{ key }}' class='{{ klass }}'/>`,
-  submit: `<input type="submit" class='{{ klass }}' value='{{ value }}'/>`
+  label: `<label class='{{ key }}-label' for='{{ key }}-field'> {{ title }}</label>`,
+  input: `<input id='{{ key }}-field' type='{{ type }}' name='{{ key }}' class='{{ klass }}'/>`,
+  submit: `<input type="submit" class='{{ klass }}' value='{{ value }}'/>`,
+  checkbox: `<label class='{{ key }}-label' for='{{ key }}-field'>{{> input }} {{ title }}</label>`
 }
 
 function textToElement (text) {
@@ -23,8 +24,6 @@ function getRenderer (type) {
       const rendered = Mustache.render(templates['label'], {
         ...value,
         key,
-        klass: key,
-        for: `${key}-field`
       })
 
       return textToElement(rendered)
@@ -34,18 +33,30 @@ function getRenderer (type) {
       const rendered = Mustache.render(templates['input'], {
         key,
         type: whatInputType[value.type],
-        id: `${key}-field`
       })
 
       return textToElement(rendered)
     },
 
     checkbox (key, value) {
-      this['text'](key, value)
+      const rendered = Mustache.render(templates['checkbox'], {
+        ...value,
+        key,
+        type: whatInputType[value.type],
+      }, {
+        input: templates['input']
+      })
+
+      return textToElement(rendered)
     },
 
     number (key, value) {
-      this['text'](key, value)
+      const rendered = Mustache.render(templates['input'], {
+        key,
+        type: whatInputType[value.type],
+      })
+
+      return textToElement(rendered)
     }
   }
 
@@ -56,7 +67,7 @@ const createFormElement = (key, value) => {
   const div = document.createElement('div')
   div.className = 'form-group'
   div.appendChild(getRenderer('label')(key, value))
-  div.appendChild(getRenderer('text')(key, value))
+  div.appendChild(getRenderer(whatInputType[value.type])(key, value))
 
   return div
 }
