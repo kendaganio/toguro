@@ -1,36 +1,52 @@
-import Mustache from 'mustache'
+import dom from './dom'
 
-const templates = {
-  label: `<label class='{{ klass }}-label' for='{{ key }}-field'> {{ title }}</label>`,
-  input: `<input id='{{ key }}-field' type='{{ type }}' name='{{ key }}' class='{{ klass }}'/>`,
-  submit: `<input type="submit" class='{{ klass }}' value='{{ value }}'/>`,
-  checkbox: `<label class='{{ key }}-label' for='{{ key }}-field'>{{> input }} {{ title }}</label>`,
-  generic: `{{> label }} {{> input }}`
+function labelProps (props) {
+  return {
+    id: `${props.key}-label`,
+    name: `${props.key}-label`,
+    for: `${props.key}-field`
+  }
+}
+
+function inputProps (props) {
+  return {
+    id: `${props.key}-field`,
+    name: `${props.key}-field`
+  }
 }
 
 function generic (props) {
-  return Mustache.render(templates['generic'], props, {
-    label: templates['label'],
-    input: templates['input']
-  })
+  const fragment = document.createDocumentFragment()
+
+  fragment.appendChild(dom.label({
+    ...props, ...labelProps(props)
+  }, props.title))
+
+  fragment.appendChild(dom.input({
+    ...props, ...inputProps(props)
+  }))
+
+  return fragment
 }
 
 function checkbox (props) {
-  return Mustache.render(templates['checkbox'], props, {
-    input: templates['input']
-  })
-}
+  const fragment = document.createDocumentFragment()
 
-function submit (props) {
-  return Mustache.render(templates['submit'], props)
+  const checkbox = dom.input({
+    ...props, ...labelProps(props)
+  })
+
+  fragment.appendChild(dom.label({
+    ...props, ...inputProps(props)
+  }, checkbox, props.title))
+
+  return fragment
 }
 
 export default (type) => {
   switch (type) {
     case 'checkbox':
       return checkbox
-    case 'submit':
-      return submit
     default:
       return generic
   }

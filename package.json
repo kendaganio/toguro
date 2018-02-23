@@ -22,8 +22,5 @@
     "standard": "^11.0.0",
     "standard-loader": "^6.0.1",
     "webpack": "^3.11.0"
-  },
-  "dependencies": {
-    "mustache": "^2.3.0"
   }
 }

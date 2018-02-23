@@ -60,7 +60,7 @@
       textArea.value = jsonSchema
 
       var submitHandler = function(formData) {
-        console.log('HTML:', formData)
+        alert(JSON.stringify(formData, undefined, 2))
       }
 
       var el = document.getElementById('form-mount')

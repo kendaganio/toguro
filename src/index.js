@@ -1,4 +1,5 @@
 import renderers from './renderers'
+import dom from './dom'
 
 const whatInputType = {
 // 'json-schema': 'input[type=]'
@@ -7,20 +8,11 @@ const whatInputType = {
   'integer': 'number'
 }
 
-function textToElement (text) {
-  return document.createRange().createContextualFragment(text)
-}
-
 const createFormElement = (key, value) => {
-  const div = document.createElement('div')
-  div.className = 'form-group'
-
   const type = whatInputType[value.type]
   const rendered = renderers(type)({...value, key, type})
 
-  div.appendChild(textToElement(rendered))
-
-  return div
+  return dom.div({class: 'form-group'}, rendered)
 }
 
 export const render = (el, { schema: { properties }, submitHandler }) => {
@@ -29,31 +21,23 @@ export const render = (el, { schema: { properties }, submitHandler }) => {
   if (!(el instanceof Element)) {
     throw new Error('el should be a valid HTML Element')
   }
-
-  const form = document.createElement('form')
-  form.setAttribute('class', 'form')
-
-  const fieldSet = document.createElement('fieldset')
-
+  const fieldSet = dom.fieldset()
   // createElements
   Object.keys(properties).forEach(key => {
     const inputEl = createFormElement(key, properties[key])
     fieldSet.insertAdjacentElement('beforeend', inputEl)
   })
 
-  // add submit button
-  const submitButton = textToElement(renderers('submit')({
-    klass: 'button -primary', value: 'Submit!'
-  }))
-
+  const submitButton = dom.input({type: 'submit', class: 'button -primary'})
   fieldSet.appendChild(submitButton)
-  form.insertAdjacentElement('beforeend', fieldSet)
-  //
-  el.insertAdjacentElement('beforeend', form)
+
+  const form = dom.form({class: 'form'}, fieldSet)
+
+  el.appendChild(form)
 
   // createEventHandlers
   form.onsubmit = (event) => {
     event.preventDefault()
-    submitHandler('walang data')
+    submitHandler('gago')
   }
 }
