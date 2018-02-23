@@ -2,13 +2,12 @@ import renderers from './renderers'
 import dom from './dom'
 
 const whatInputType = {
-// 'json-schema': 'input[type=]'
   'string': 'text',
   'boolean': 'checkbox',
   'integer': 'number'
 }
 
-const createFormElement = (key, value) => {
+const createFormGroup = (key, value) => {
   const type = whatInputType[value.type]
   const rendered = renderers(type)({...value, key, type})
 
@@ -22,7 +21,7 @@ export const render = (el, { schema: { properties }, submitHandler }) => {
     throw new Error('el should be a valid HTML Element')
   }
 
-  const elements = Object.keys(properties).map(key => createFormElement(key, properties[key]))
+  const elements = Object.keys(properties).map(key => createFormGroup(key, properties[key]))
   const form = dom.form({class: 'form'},
     dom.fieldset({},
       ...elements,
