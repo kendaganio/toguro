@@ -98,10 +98,11 @@ var whatInputType = {
   'integer': 'number'
 };
 var templates = {
-  label: "<label class='{{ key }}-label' for='{{ key }}-field'> {{ title }}</label>",
+  label: "<label class='{{ klass }}-label' for='{{ key }}-field'> {{ title }}</label>",
   input: "<input id='{{ key }}-field' type='{{ type }}' name='{{ key }}' class='{{ klass }}'/>",
   submit: "<input type=\"submit\" class='{{ klass }}' value='{{ value }}'/>",
-  checkbox: "<label class='{{ key }}-label' for='{{ key }}-field'>{{> input }} {{ title }}</label>"
+  checkbox: "<label class='{{ key }}-label' for='{{ key }}-field'>{{> input }} {{ title }}</label>",
+  generic: "{{> label }} {{> input }}"
 };
 
 function textToElement(text) {
@@ -111,37 +112,35 @@ function textToElement(text) {
 function getRenderer(type) {
   var renderers = {
     label: function label(key, value) {
-      var rendered = _mustache.default.render(templates['label'], _extends({}, value, {
+      return _mustache.default.render(templates['label'], _extends({}, value, {
         key: key
       }));
-
-      return textToElement(rendered);
     },
     text: function text(key, value) {
-      var rendered = _mustache.default.render(templates['input'], {
+      return _mustache.default.render(templates['generic'], _extends({}, value, {
         key: key,
         type: whatInputType[value.type]
+      }), {
+        label: templates['label'],
+        input: templates['input']
       });
-
-      return textToElement(rendered);
     },
     checkbox: function checkbox(key, value) {
-      var rendered = _mustache.default.render(templates['checkbox'], _extends({}, value, {
+      return _mustache.default.render(templates['checkbox'], _extends({}, value, {
         key: key,
         type: whatInputType[value.type]
       }), {
         input: templates['input']
       });
-
-      return textToElement(rendered);
     },
     number: function number(key, value) {
-      var rendered = _mustache.default.render(templates['input'], {
+      return _mustache.default.render(templates['generic'], _extends({}, value, {
         key: key,
         type: whatInputType[value.type]
+      }), {
+        label: templates['label'],
+        input: templates['input']
       });
-
-      return textToElement(rendered);
     }
   };
   return renderers[type];
@@ -150,8 +149,9 @@ function getRenderer(type) {
 var createFormElement = function createFormElement(key, value) {
   var div = document.createElement('div');
   div.className = 'form-group';
-  div.appendChild(getRenderer('label')(key, value));
-  div.appendChild(getRenderer(whatInputType[value.type])(key, value));
+  var renderer = getRenderer(whatInputType[value.type]);
+  var rendered = renderer(key, value);
+  div.appendChild(textToElement(rendered));
   return div;
 };
 
@@ -160,6 +160,7 @@ var render = function render(el, _ref) {
       submitHandler = _ref.submitHandler;
 
   // init validations
+  // eslint-disable-next-line
   if (!(el instanceof Element)) {
     throw new Error('el should be a valid HTML Element');
   }

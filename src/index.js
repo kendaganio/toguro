@@ -4,14 +4,15 @@ const whatInputType = {
 // 'json-schema': 'input[type=]'
   'string': 'text',
   'boolean': 'checkbox',
-  'integer': 'number',
+  'integer': 'number'
 }
 
 const templates = {
-  label: `<label class='{{ key }}-label' for='{{ key }}-field'> {{ title }}</label>`,
+  label: `<label class='{{ klass }}-label' for='{{ key }}-field'> {{ title }}</label>`,
   input: `<input id='{{ key }}-field' type='{{ type }}' name='{{ key }}' class='{{ klass }}'/>`,
   submit: `<input type="submit" class='{{ klass }}' value='{{ value }}'/>`,
-  checkbox: `<label class='{{ key }}-label' for='{{ key }}-field'>{{> input }} {{ title }}</label>`
+  checkbox: `<label class='{{ key }}-label' for='{{ key }}-field'>{{> input }} {{ title }}</label>`,
+  generic: `{{> label }} {{> input }}`
 }
 
 function textToElement (text) {
@@ -21,42 +22,39 @@ function textToElement (text) {
 function getRenderer (type) {
   const renderers = {
     label (key, value) {
-      const rendered = Mustache.render(templates['label'], {
-        ...value,
-        key,
-      })
-
-      return textToElement(rendered)
+      return Mustache.render(templates['label'], { ...value, key })
     },
 
     text (key, value) {
-      const rendered = Mustache.render(templates['input'], {
+      return Mustache.render(templates['generic'], {
+        ...value,
         key,
-        type: whatInputType[value.type],
+        type: whatInputType[value.type]
+      }, {
+        label: templates['label'],
+        input: templates['input']
       })
-
-      return textToElement(rendered)
     },
 
     checkbox (key, value) {
-      const rendered = Mustache.render(templates['checkbox'], {
+      return Mustache.render(templates['checkbox'], {
         ...value,
         key,
-        type: whatInputType[value.type],
+        type: whatInputType[value.type]
       }, {
         input: templates['input']
       })
-
-      return textToElement(rendered)
     },
 
     number (key, value) {
-      const rendered = Mustache.render(templates['input'], {
+      return Mustache.render(templates['generic'], {
+        ...value,
         key,
-        type: whatInputType[value.type],
+        type: whatInputType[value.type]
+      }, {
+        label: templates['label'],
+        input: templates['input']
       })
-
-      return textToElement(rendered)
     }
   }
 
@@ -66,14 +64,18 @@ function getRenderer (type) {
 const createFormElement = (key, value) => {
   const div = document.createElement('div')
   div.className = 'form-group'
-  div.appendChild(getRenderer('label')(key, value))
-  div.appendChild(getRenderer(whatInputType[value.type])(key, value))
+
+  const renderer = getRenderer(whatInputType[value.type])
+  const rendered = renderer(key, value)
+
+  div.appendChild(textToElement(rendered))
 
   return div
 }
 
 export const render = (el, { schema: { properties }, submitHandler }) => {
   // init validations
+  // eslint-disable-next-line
   if (!(el instanceof Element)) {
     throw new Error('el should be a valid HTML Element')
   }
