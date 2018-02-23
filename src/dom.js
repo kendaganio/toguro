@@ -15,7 +15,7 @@ const makeBabies = (fragment, children) => {
   })
 }
 
-const dom = (tag, attrs = {}, ...children) => {
+const createElement = (tag, attrs = {}, ...children) => {
   const el = document.createElement(tag)
   Object.keys(attrs).forEach(attr => el.setAttribute(attr, attrs[attr]))
 
@@ -27,7 +27,7 @@ const dom = (tag, attrs = {}, ...children) => {
 }
 
 const tagFactory = (tag, attrs, ...children) => {
-  return (attrs, ...children) => dom(tag, attrs, ...children)
+  return (attrs, ...children) => createElement(tag, attrs, ...children)
 }
 
 const functions = {}

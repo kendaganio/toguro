@@ -222,7 +222,7 @@ var makeBabies = function makeBabies(fragment, children) {
   });
 };
 
-var dom = function dom(tag) {
+var createElement = function createElement(tag) {
   var attrs = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
   var el = document.createElement(tag);
   Object.keys(attrs).forEach(function (attr) {
@@ -245,7 +245,7 @@ var tagFactory = function tagFactory(tag, attrs) {
       children[_key2 - 1] = arguments[_key2];
     }
 
-    return dom.apply(void 0, [tag, attrs].concat(children));
+    return createElement.apply(void 0, [tag, attrs].concat(children));
   };
 };
 
