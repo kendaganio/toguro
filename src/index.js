@@ -1,4 +1,4 @@
-import Mustache from 'mustache'
+import renderers from './renderers'
 
 const whatInputType = {
 // 'json-schema': 'input[type=]'
@@ -7,66 +7,16 @@ const whatInputType = {
   'integer': 'number'
 }
 
-const templates = {
-  label: `<label class='{{ klass }}-label' for='{{ key }}-field'> {{ title }}</label>`,
-  input: `<input id='{{ key }}-field' type='{{ type }}' name='{{ key }}' class='{{ klass }}'/>`,
-  submit: `<input type="submit" class='{{ klass }}' value='{{ value }}'/>`,
-  checkbox: `<label class='{{ key }}-label' for='{{ key }}-field'>{{> input }} {{ title }}</label>`,
-  generic: `{{> label }} {{> input }}`
-}
-
 function textToElement (text) {
   return document.createRange().createContextualFragment(text)
-}
-
-function getRenderer (type) {
-  const renderers = {
-    label (key, value) {
-      return Mustache.render(templates['label'], { ...value, key })
-    },
-
-    text (key, value) {
-      return Mustache.render(templates['generic'], {
-        ...value,
-        key,
-        type: whatInputType[value.type]
-      }, {
-        label: templates['label'],
-        input: templates['input']
-      })
-    },
-
-    checkbox (key, value) {
-      return Mustache.render(templates['checkbox'], {
-        ...value,
-        key,
-        type: whatInputType[value.type]
-      }, {
-        input: templates['input']
-      })
-    },
-
-    number (key, value) {
-      return Mustache.render(templates['generic'], {
-        ...value,
-        key,
-        type: whatInputType[value.type]
-      }, {
-        label: templates['label'],
-        input: templates['input']
-      })
-    }
-  }
-
-  return renderers[type]
 }
 
 const createFormElement = (key, value) => {
   const div = document.createElement('div')
   div.className = 'form-group'
 
-  const renderer = getRenderer(whatInputType[value.type])
-  const rendered = renderer(key, value)
+  const type = whatInputType[value.type]
+  const rendered = renderers(type)({...value, key, type})
 
   div.appendChild(textToElement(rendered))
 
@@ -87,13 +37,14 @@ export const render = (el, { schema: { properties }, submitHandler }) => {
 
   // createElements
   Object.keys(properties).forEach(key => {
-    console.log(key, properties[key])
     const inputEl = createFormElement(key, properties[key])
     fieldSet.insertAdjacentElement('beforeend', inputEl)
   })
 
   // add submit button
-  const submitButton = textToElement(Mustache.render(templates['submit'], { klass: 'button -primary', value: 'Submit!' }))
+  const submitButton = textToElement(renderers('submit')({
+    klass: 'button -primary', value: 'Submit!'
+  }))
 
   fieldSet.appendChild(submitButton)
   form.insertAdjacentElement('beforeend', fieldSet)

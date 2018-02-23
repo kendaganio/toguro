@@ -85,7 +85,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.render = void 0;
 
-var _mustache = _interopRequireDefault(__webpack_require__(1));
+var _renderers = _interopRequireDefault(__webpack_require__(4));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -97,60 +97,19 @@ var whatInputType = {
   'boolean': 'checkbox',
   'integer': 'number'
 };
-var templates = {
-  label: "<label class='{{ klass }}-label' for='{{ key }}-field'> {{ title }}</label>",
-  input: "<input id='{{ key }}-field' type='{{ type }}' name='{{ key }}' class='{{ klass }}'/>",
-  submit: "<input type=\"submit\" class='{{ klass }}' value='{{ value }}'/>",
-  checkbox: "<label class='{{ key }}-label' for='{{ key }}-field'>{{> input }} {{ title }}</label>",
-  generic: "{{> label }} {{> input }}"
-};
 
 function textToElement(text) {
   return document.createRange().createContextualFragment(text);
 }
 
-function getRenderer(type) {
-  var renderers = {
-    label: function label(key, value) {
-      return _mustache.default.render(templates['label'], _extends({}, value, {
-        key: key
-      }));
-    },
-    text: function text(key, value) {
-      return _mustache.default.render(templates['generic'], _extends({}, value, {
-        key: key,
-        type: whatInputType[value.type]
-      }), {
-        label: templates['label'],
-        input: templates['input']
-      });
-    },
-    checkbox: function checkbox(key, value) {
-      return _mustache.default.render(templates['checkbox'], _extends({}, value, {
-        key: key,
-        type: whatInputType[value.type]
-      }), {
-        input: templates['input']
-      });
-    },
-    number: function number(key, value) {
-      return _mustache.default.render(templates['generic'], _extends({}, value, {
-        key: key,
-        type: whatInputType[value.type]
-      }), {
-        label: templates['label'],
-        input: templates['input']
-      });
-    }
-  };
-  return renderers[type];
-}
-
 var createFormElement = function createFormElement(key, value) {
   var div = document.createElement('div');
   div.className = 'form-group';
-  var renderer = getRenderer(whatInputType[value.type]);
-  var rendered = renderer(key, value);
+  var type = whatInputType[value.type];
+  var rendered = (0, _renderers.default)(type)(_extends({}, value, {
+    key: key,
+    type: type
+  }));
   div.appendChild(textToElement(rendered));
   return div;
 };
@@ -170,12 +129,11 @@ var render = function render(el, _ref) {
   var fieldSet = document.createElement('fieldset'); // createElements
 
   Object.keys(properties).forEach(function (key) {
-    console.log(key, properties[key]);
     var inputEl = createFormElement(key, properties[key]);
     fieldSet.insertAdjacentElement('beforeend', inputEl);
   }); // add submit button
 
-  var submitButton = textToElement(_mustache.default.render(templates['submit'], {
+  var submitButton = textToElement((0, _renderers.default)('submit')({
     klass: 'button -primary',
     value: 'Submit!'
   }));
@@ -830,6 +788,64 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   return mustache;
 }));
 
+
+/***/ }),
+/* 2 */,
+/* 3 */,
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _mustache = _interopRequireDefault(__webpack_require__(1));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var templates = {
+  label: "<label class='{{ klass }}-label' for='{{ key }}-field'> {{ title }}</label>",
+  input: "<input id='{{ key }}-field' type='{{ type }}' name='{{ key }}' class='{{ klass }}'/>",
+  submit: "<input type=\"submit\" class='{{ klass }}' value='{{ value }}'/>",
+  checkbox: "<label class='{{ key }}-label' for='{{ key }}-field'>{{> input }} {{ title }}</label>",
+  generic: "{{> label }} {{> input }}"
+};
+
+function generic(props) {
+  return _mustache.default.render(templates['generic'], props, {
+    label: templates['label'],
+    input: templates['input']
+  });
+}
+
+function checkbox(props) {
+  return _mustache.default.render(templates['checkbox'], props, {
+    input: templates['input']
+  });
+}
+
+function submit(props) {
+  return _mustache.default.render(templates['submit'], props);
+}
+
+var _default = function _default(type) {
+  switch (type) {
+    case 'checkbox':
+      return checkbox;
+
+    case 'submit':
+      return submit;
+
+    default:
+      return generic;
+  }
+};
+
+exports.default = _default;
 
 /***/ })
 /******/ ]);
