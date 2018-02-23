@@ -70,11 +70,60 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 0);
+/******/ 	return __webpack_require__(__webpack_require__.s = 1);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
+/***/ (function(module, exports) {
+
+var htmlTags = ['input', 'label', 'div', 'form', 'fieldset'];
+
+var makeBabies = function makeBabies(fragment, children) {
+  children.forEach(function (child) {
+    if (typeof child === 'string') {
+      child = document.createTextNode(child);
+    }
+
+    fragment.appendChild(child);
+  });
+};
+
+var createElement = function createElement(tag) {
+  var attrs = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  var el = document.createElement(tag);
+  Object.keys(attrs).forEach(function (attr) {
+    return el.setAttribute(attr, attrs[attr]);
+  });
+  var fragment = document.createDocumentFragment();
+
+  for (var _len = arguments.length, children = new Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
+    children[_key - 2] = arguments[_key];
+  }
+
+  makeBabies(fragment, children);
+  el.appendChild(fragment);
+  return el;
+};
+
+var tagFactory = function tagFactory(tag, attrs) {
+  return function (attrs) {
+    for (var _len2 = arguments.length, children = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
+      children[_key2 - 1] = arguments[_key2];
+    }
+
+    return createElement.apply(void 0, [tag, attrs].concat(children));
+  };
+};
+
+var functions = {};
+htmlTags.forEach(function (tag) {
+  functions[tag] = tagFactory(tag);
+});
+module.exports = functions;
+
+/***/ }),
+/* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -85,9 +134,9 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.render = void 0;
 
-var _renderers = _interopRequireDefault(__webpack_require__(1));
+var _renderers = _interopRequireDefault(__webpack_require__(2));
 
-var _dom = _interopRequireDefault(__webpack_require__(2));
+var _dom = _interopRequireDefault(__webpack_require__(0));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -145,7 +194,7 @@ var render = function render(el, _ref) {
 exports.render = render;
 
 /***/ }),
-/* 1 */
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -156,7 +205,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _dom = _interopRequireDefault(__webpack_require__(2));
+var _dom = _interopRequireDefault(__webpack_require__(0));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -205,55 +254,7 @@ var _default = function _default(type) {
 
 exports.default = _default;
 
-/***/ }),
-/* 2 */
-/***/ (function(module, exports) {
-
-var htmlTags = ['input', 'label', 'div', 'form', 'fieldset'];
-
-var makeBabies = function makeBabies(fragment, children) {
-  children.forEach(function (child) {
-    if (typeof child === 'string') {
-      child = document.createTextNode(child);
-    }
-
-    fragment.appendChild(child);
-  });
-};
-
-var createElement = function createElement(tag) {
-  var attrs = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-  var el = document.createElement(tag);
-  Object.keys(attrs).forEach(function (attr) {
-    return el.setAttribute(attr, attrs[attr]);
-  });
-  var fragment = document.createDocumentFragment();
-
-  for (var _len = arguments.length, children = new Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
-    children[_key - 2] = arguments[_key];
-  }
-
-  makeBabies(fragment, children);
-  el.appendChild(fragment);
-  return el;
-};
-
-var tagFactory = function tagFactory(tag, attrs) {
-  return function (attrs) {
-    for (var _len2 = arguments.length, children = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
-      children[_key2 - 1] = arguments[_key2];
-    }
-
-    return createElement.apply(void 0, [tag, attrs].concat(children));
-  };
-};
-
-var functions = {};
-htmlTags.forEach(function (tag) {
-  functions[tag] = tagFactory(tag);
-});
-module.exports = functions;
-
 /***/ })
 /******/ ]);
 });
+//# sourceMappingURL=toguro.js.map
