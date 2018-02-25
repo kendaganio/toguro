@@ -7,7 +7,7 @@
 		exports["toguro"] = factory();
 	else
 		root["toguro"] = factory();
-})(typeof self !== 'undefined' ? self : this, function() {
+})(window, function() {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -54,6 +54,11 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 		}
 /******/ 	};
 /******/
+/******/ 	// define __esModule on exports
+/******/ 	__webpack_require__.r = function(exports) {
+/******/ 		Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 	};
+/******/
 /******/ 	// getDefaultExport function for compatibility with non-harmony modules
 /******/ 	__webpack_require__.n = function(module) {
 /******/ 		var getter = module && module.__esModule ?
@@ -69,15 +74,20 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// __webpack_public_path__
 /******/ 	__webpack_require__.p = "";
 /******/
+/******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 1);
+/******/ 	return __webpack_require__(__webpack_require__.s = "./src/index.js");
 /******/ })
 /************************************************************************/
-/******/ ([
-/* 0 */
+/******/ ({
+
+/***/ "./src/dom.js":
+/*!********************!*\
+  !*** ./src/dom.js ***!
+  \********************/
+/*! no static exports found */
 /***/ (function(module, exports) {
 
-"use strict";
 function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 
 var htmlTags = ['input', 'label', 'div', 'form', 'fieldset'];
@@ -128,7 +138,12 @@ module.exports = _extends({}, functions, {
 });
 
 /***/ }),
-/* 1 */
+
+/***/ "./src/index.js":
+/*!**********************!*\
+  !*** ./src/index.js ***!
+  \**********************/
+/*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -139,9 +154,9 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.render = void 0;
 
-var _renderers = _interopRequireDefault(__webpack_require__(2));
+var _renderers = _interopRequireDefault(__webpack_require__(/*! ./renderers */ "./src/renderers.js"));
 
-var _dom = _interopRequireDefault(__webpack_require__(0));
+var _dom = _interopRequireDefault(__webpack_require__(/*! ./dom */ "./src/dom.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -170,7 +185,6 @@ var render = function render(el, _ref) {
   var properties = _ref.schema.properties,
       submitHandler = _ref.submitHandler;
 
-  // init validations
   // eslint-disable-next-line
   if (!(el instanceof Element)) {
     throw new Error('el should be a valid HTML Element');
@@ -185,8 +199,7 @@ var render = function render(el, _ref) {
   }, _dom.default.fieldset.apply(_dom.default, [{}].concat(_toConsumableArray(elements), [_dom.default.input({
     type: 'submit',
     class: 'button -primary'
-  })]))); // createEventHandlers
-
+  })])));
 
   form.onsubmit = function (event) {
     event.preventDefault();
@@ -199,7 +212,12 @@ var render = function render(el, _ref) {
 exports.render = render;
 
 /***/ }),
-/* 2 */
+
+/***/ "./src/renderers.js":
+/*!**************************!*\
+  !*** ./src/renderers.js ***!
+  \**************************/
+/*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -210,7 +228,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _dom = _interopRequireDefault(__webpack_require__(0));
+var _dom = _interopRequireDefault(__webpack_require__(/*! ./dom */ "./src/dom.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -252,6 +270,7 @@ var _default = function _default(type) {
 exports.default = _default;
 
 /***/ })
-/******/ ]);
+
+/******/ });
 });
 //# sourceMappingURL=toguro.js.map

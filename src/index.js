@@ -15,7 +15,6 @@ const createFormGroup = (key, value) => {
 }
 
 export const render = (el, { schema: { properties }, submitHandler }) => {
-  // init validations
   // eslint-disable-next-line
   if (!(el instanceof Element)) {
     throw new Error('el should be a valid HTML Element')
@@ -29,7 +28,6 @@ export const render = (el, { schema: { properties }, submitHandler }) => {
     )
   )
 
-  // createEventHandlers
   form.onsubmit = (event) => {
     event.preventDefault()
     submitHandler('gago')

@@ -8,6 +8,7 @@ module.exports = {
     library: 'toguro',
     libraryTarget: 'umd'
   },
+  mode: 'development',
   devtool: 'source-map',
   module: {
     rules: [{
