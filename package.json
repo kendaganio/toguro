@@ -4,7 +4,7 @@
   "description": "100% forms",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "start": "webpack -w"
   },
   "repository": {
@@ -19,6 +19,7 @@
     "babel-loader": "8.0.0-beta.0",
     "eslint": "^4.18.1",
     "eslint-loader": "^1.9.0",
+    "jest": "^22.4.2",
     "standard": "^11.0.0",
     "standard-loader": "^6.0.1",
     "webpack": "^3.11.0"

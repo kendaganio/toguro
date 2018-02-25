@@ -19,7 +19,9 @@ function inputProps (props) {
 
 function generic (props) {
   return dom.fragment([
-    dom.label(labelProps(props), props.title),
+    dom.label(labelProps(props),
+      props.title
+    ),
     dom.input(inputProps(props))
   ])
 }
