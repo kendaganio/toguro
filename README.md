@@ -1,4 +1,4 @@
-# Toguro
+# Toguro &middot; [![Build Status](https://travis-ci.org/kendaganio/toguro.svg?branch=master)](https://travis-ci.org/kendaganio/toguro)
 > Isang daang porsiyento
 
 <p align='center'>
