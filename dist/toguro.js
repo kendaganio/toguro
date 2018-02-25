@@ -77,9 +77,13 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 0 */
 /***/ (function(module, exports) {
 
+"use strict";
+function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
+
 var htmlTags = ['input', 'label', 'div', 'form', 'fieldset'];
 
-var makeBabies = function makeBabies(fragment, children) {
+var fragment = function fragment(children) {
+  var fragment = document.createDocumentFragment();
   children.forEach(function (child) {
     if (typeof child === 'string') {
       child = document.createTextNode(child);
@@ -87,6 +91,7 @@ var makeBabies = function makeBabies(fragment, children) {
 
     fragment.appendChild(child);
   });
+  return fragment;
 };
 
 var createElement = function createElement(tag) {
@@ -95,14 +100,12 @@ var createElement = function createElement(tag) {
   Object.keys(attrs).forEach(function (attr) {
     return el.setAttribute(attr, attrs[attr]);
   });
-  var fragment = document.createDocumentFragment();
 
   for (var _len = arguments.length, children = new Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
     children[_key - 2] = arguments[_key];
   }
 
-  makeBabies(fragment, children);
-  el.appendChild(fragment);
+  el.appendChild(fragment(children));
   return el;
 };
 
@@ -120,7 +123,9 @@ var functions = {};
 htmlTags.forEach(function (tag) {
   functions[tag] = tagFactory(tag);
 });
-module.exports = functions;
+module.exports = _extends({}, functions, {
+  fragment: fragment
+});
 
 /***/ }),
 /* 1 */
@@ -212,34 +217,26 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 
 function labelProps(props) {
-  return {
+  return _extends({}, props, {
     id: "".concat(props.key, "-label"),
     name: "".concat(props.key, "-label"),
     for: "".concat(props.key, "-field")
-  };
+  });
 }
 
 function inputProps(props) {
-  return {
+  return _extends({}, props, {
     id: "".concat(props.key, "-field"),
     name: "".concat(props.key, "-field")
-  };
+  });
 }
 
 function generic(props) {
-  var fragment = document.createDocumentFragment();
-  fragment.appendChild(_dom.default.label(_extends({}, props, labelProps(props)), props.title));
-  fragment.appendChild(_dom.default.input(_extends({}, props, inputProps(props))));
-  return fragment;
+  return _dom.default.fragment([_dom.default.label(labelProps(props), props.title), _dom.default.input(inputProps(props))]);
 }
 
 function checkbox(props) {
-  var fragment = document.createDocumentFragment();
-
-  var checkbox = _dom.default.input(_extends({}, props, labelProps(props)));
-
-  fragment.appendChild(_dom.default.label(_extends({}, props, inputProps(props)), checkbox, props.title));
-  return fragment;
+  return _dom.default.label(inputProps(props), _dom.default.input(labelProps(props)), props.title);
 }
 
 var _default = function _default(type) {
