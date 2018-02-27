@@ -90,7 +90,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 
-var htmlTags = ['input', 'label', 'div', 'form', 'fieldset'];
+var htmlTags = ['input', 'label', 'select', 'option', 'div', 'form', 'fieldset'];
 
 var fragment = function fragment(children) {
   var fragment = document.createDocumentFragment();
@@ -174,21 +174,31 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 
-var whatInputType = {
-  'string': 'text',
-  'boolean': 'checkbox',
-  'integer': 'number'
+var whatInputType = function whatInputType(props) {
+  if (props.type === 'string' && props.enum) {
+    return 'select';
+  } else {
+    var lel = {
+      'string': 'text',
+      'boolean': 'checkbox',
+      'integer': 'number'
+    };
+    return lel[props.type];
+  }
 };
 
 var createFormGroup = function createFormGroup(key, value) {
-  var type = whatInputType[value.type];
-  var rendered = (0, _renderers.default)(type)(_extends({}, value, {
-    key: key,
-    type: type
-  }));
+  var type = whatInputType(value);
+
+  var props = _extends({}, value, {
+    type: type,
+    key: key
+  });
+
+  var renderer = (0, _renderers.default)(type);
   return _dom.default.div({
     class: 'form-group'
-  }, rendered);
+  }, renderer(props));
 };
 
 var Toguro =
@@ -202,6 +212,11 @@ function () {
   }
 
   _createClass(Toguro, [{
+    key: "setSchema",
+    value: function setSchema(schema) {
+      this.schema = schema;
+    }
+  }, {
     key: "render",
     value: function render() {
       var _this = this;
@@ -234,6 +249,7 @@ function () {
         throw new Error('el should be a valid HTML Element');
       }
 
+      el.innerHTML = '';
       el.appendChild(this.render());
     }
   }]);
@@ -264,6 +280,8 @@ var _dom = _interopRequireDefault(__webpack_require__(/*! ./dom */ "./src/dom.js
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 
 function labelProps(props) {
@@ -292,10 +310,23 @@ function checkbox(props) {
   return _dom.default.label(inputProps(props), _dom.default.input(labelProps(props)), props.title);
 }
 
+function select(props) {
+  return _dom.default.fragment([_dom.default.label(labelProps(props), props.title), _dom.default.select.apply(_dom.default, [inputProps(props), _dom.default.option({
+    value: ''
+  }, '-- Choose one ---')].concat(_toConsumableArray(props.enum.map(function (e) {
+    return _dom.default.option({
+      value: e
+    }, e);
+  }))))]);
+}
+
 var _default = function _default(type) {
   switch (type) {
     case 'checkbox':
       return checkbox;
+
+    case 'select':
+      return select;
 
     default:
       return generic;

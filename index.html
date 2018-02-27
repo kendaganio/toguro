@@ -1,22 +1,21 @@
 <!DOCTYPE html>
 <html>
-
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <title></title>
-    <script src="./dist/toguro.js"></script>
 
     <link rel="stylesheet" href="../corgi/css/corgi.css" type="text/css" media="screen" charset="utf-8">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.11.0/themes/prism.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/CodeFlask.js/0.2.0/codeflask.min.css" />
 
+    <script src="./dist/toguro.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.11.0/prism.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/CodeFlask.js/0.1.1/codeflask.min.js"></script>
 
     <style type="text/css" media="screen">
       #left-panel { 
-        padding-top: 50px;
+        padding-top: 20px;
         background: #eee;
         border-right: 2px dashed gray;
       }
@@ -53,17 +52,18 @@
             "type": "integer",
             "title": "Age",
           },
-          "description": {
-            "type": "string",
-            "title": "Description",
-          },
-          "done": {
+          "remember_me": {
             "type": "boolean",
-            "title": "Done",
+            "title": "Remember me",
           },
-          "rating": {
-            "type": "integer",
-            "title": "Rating",
+          "favorite_color": {
+            "type": "string",
+            "title": "Color",
+            "enum": [
+              "Red",
+              "Blue",
+              "Green"
+            ]
           }
         },
         "required": [
@@ -71,17 +71,23 @@
         ]
       }
 
-      document.querySelector('#schema').innerHTML = JSON.stringify(schema, null, 2)
+      var el = document.getElementById('form-mount')
+      var schemaEl = document.querySelector('#schema')
+      schemaEl.innerHTML = JSON.stringify(schema, null, 2)
 
       var flask = new CodeFlask;
       flask.run('#schema', {language: 'json'});
+      flask.onUpdate(function(code) {
+        toguro.setSchema(JSON.parse(code))
+        toguro.renderTo(el)
+      });
 
+      // business stuff
 
       var submitHandler = function(formData) {
         alert(JSON.stringify(formData, undefined, 2))
       }
 
-      var el = document.getElementById('form-mount')
       var toguro = new Toguro({
         schema: schema,
         submit: submitHandler
@@ -89,7 +95,6 @@
 
       toguro.renderTo(el)
 
-      var generate = document.querySelector("#generate")
     </script>
   </body>
 </html>

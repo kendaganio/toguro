@@ -1,23 +1,38 @@
 import renderers from './renderers'
 import dom from './dom'
 
-const whatInputType = {
-  'string': 'text',
-  'boolean': 'checkbox',
-  'integer': 'number'
+const whatInputType = props => {
+  if (props.type === 'string' && props.enum) {
+    return 'select'
+  } else {
+    const lel = {
+      'string': 'text',
+      'boolean': 'checkbox',
+      'integer': 'number'
+    }
+    return lel[props.type]
+  }
 }
 
 const createFormGroup = (key, value) => {
-  const type = whatInputType[value.type]
-  const rendered = renderers(type)({...value, key, type})
-
-  return dom.div({class: 'form-group'}, rendered)
+  const type = whatInputType(value)
+  const props = {
+    ...value,
+    type,
+    key
+  }
+  const renderer = renderers(type)
+  return dom.div({class: 'form-group'}, renderer(props))
 }
 
 export class Toguro {
   constructor (options) {
     this.schema = options.schema
     this.submit = options.submit
+  }
+
+  setSchema (schema) {
+    this.schema = schema
   }
 
   render () {
@@ -41,6 +56,7 @@ export class Toguro {
   renderTo (el) {
     // eslint-disable-next-line
     if (!(el instanceof Element)) { throw new Error('el should be a valid HTML Element') }
+    el.innerHTML = ''
     el.appendChild(this.render())
   }
 }

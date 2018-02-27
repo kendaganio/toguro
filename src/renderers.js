@@ -34,10 +34,24 @@ function checkbox (props) {
   )
 }
 
+function select (props) {
+  return dom.fragment([
+    dom.label(labelProps(props),
+      props.title
+    ),
+    dom.select(inputProps(props),
+      dom.option({value: ''}, '-- Choose one ---'),
+      ...props.enum.map(e => dom.option({value: e}, e))
+    )
+  ])
+}
+
 export default (type) => {
   switch (type) {
     case 'checkbox':
       return checkbox
+    case 'select':
+      return select
     default:
       return generic
   }

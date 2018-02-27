@@ -1,6 +1,8 @@
 const htmlTags = [
   'input',
   'label',
+  'select',
+  'option',
   'div',
   'form',
   'fieldset'
