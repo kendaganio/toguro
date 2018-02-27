@@ -5,7 +5,6 @@ module.exports = {
   output: {
     filename: 'toguro.js',
     path: path.resolve(__dirname, 'dist'),
-    library: 'toguro',
     libraryTarget: 'umd'
   },
   mode: 'development',

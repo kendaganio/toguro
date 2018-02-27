@@ -3,10 +3,10 @@
 		module.exports = factory();
 	else if(typeof define === 'function' && define.amd)
 		define([], factory);
-	else if(typeof exports === 'object')
-		exports["toguro"] = factory();
-	else
-		root["toguro"] = factory();
+	else {
+		var a = factory();
+		for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
+	}
 })(window, function() {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
@@ -108,7 +108,11 @@ var createElement = function createElement(tag) {
   var attrs = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
   var el = document.createElement(tag);
   Object.keys(attrs).forEach(function (attr) {
-    return el.setAttribute(attr, attrs[attr]);
+    if (typeof attrs[attr] === 'string') {
+      el.setAttribute(attr, attrs[attr]);
+    } else if (typeof attrs[attr] === 'function') {
+      el[attr] = attrs[attr];
+    }
   });
 
   for (var _len = arguments.length, children = new Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
@@ -152,7 +156,7 @@ module.exports = _extends({}, functions, {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.render = void 0;
+exports.Toguro = void 0;
 
 var _renderers = _interopRequireDefault(__webpack_require__(/*! ./renderers */ "./src/renderers.js"));
 
@@ -161,6 +165,12 @@ var _dom = _interopRequireDefault(__webpack_require__(/*! ./dom */ "./src/dom.js
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 
@@ -181,35 +191,57 @@ var createFormGroup = function createFormGroup(key, value) {
   }, rendered);
 };
 
-var render = function render(el, _ref) {
-  var properties = _ref.schema.properties,
-      submitHandler = _ref.submitHandler;
+var Toguro =
+/*#__PURE__*/
+function () {
+  function Toguro(options) {
+    _classCallCheck(this, Toguro);
 
-  // eslint-disable-next-line
-  if (!(el instanceof Element)) {
-    throw new Error('el should be a valid HTML Element');
+    this.schema = options.schema;
+    this.submit = options.submit;
   }
 
-  var elements = Object.keys(properties).map(function (key) {
-    return createFormGroup(key, properties[key]);
-  });
+  _createClass(Toguro, [{
+    key: "render",
+    value: function render() {
+      var _this = this;
 
-  var form = _dom.default.form({
-    class: 'form'
-  }, _dom.default.fieldset.apply(_dom.default, [{}].concat(_toConsumableArray(elements), [_dom.default.input({
-    type: 'submit',
-    class: 'button -primary'
-  })])));
+      var properties = this.schema.properties;
+      var elements = Object.keys(properties).map(function (key) {
+        return createFormGroup(key, properties[key]);
+      });
 
-  form.onsubmit = function (event) {
-    event.preventDefault();
-    submitHandler('gago');
-  };
+      var form = _dom.default.form({
+        class: 'form'
+      }, _dom.default.fieldset.apply(_dom.default, [{}].concat(_toConsumableArray(elements), [_dom.default.input({
+        type: 'submit',
+        class: 'button -primary'
+      })])));
 
-  el.appendChild(form);
-};
+      form.onsubmit = function (event) {
+        event.preventDefault();
 
-exports.render = render;
+        _this.submit('gago');
+      };
+
+      return form;
+    }
+  }, {
+    key: "renderTo",
+    value: function renderTo(el) {
+      // eslint-disable-next-line
+      if (!(el instanceof Element)) {
+        throw new Error('el should be a valid HTML Element');
+      }
+
+      el.appendChild(this.render());
+    }
+  }]);
+
+  return Toguro;
+}();
+
+exports.Toguro = Toguro;
 
 /***/ }),
 
@@ -245,7 +277,10 @@ function labelProps(props) {
 function inputProps(props) {
   return _extends({}, props, {
     id: "".concat(props.key, "-field"),
-    name: "".concat(props.key, "-field")
+    name: "".concat(props.key, "-field"),
+    onkeyup: function onkeyup(e) {
+      console.log(e.currentTarget.value);
+    }
   });
 }
 

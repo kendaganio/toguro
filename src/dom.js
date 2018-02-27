@@ -8,20 +8,24 @@ const htmlTags = [
 
 const fragment = (children) => {
   const fragment = document.createDocumentFragment()
-
   children.forEach(child => {
     if (typeof child === 'string') {
       child = document.createTextNode(child)
     }
     fragment.appendChild(child)
   })
-
   return fragment
 }
 
 const createElement = (tag, attrs = {}, ...children) => {
   const el = document.createElement(tag)
-  Object.keys(attrs).forEach(attr => el.setAttribute(attr, attrs[attr]))
+  Object.keys(attrs).forEach(attr => {
+    if (typeof attrs[attr] === 'string') {
+      el.setAttribute(attr, attrs[attr])
+    } else if (typeof attrs[attr] === 'function') {
+      el[attr] = attrs[attr]
+    }
+  })
 
   el.appendChild(fragment(children))
   return el

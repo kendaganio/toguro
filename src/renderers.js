@@ -13,7 +13,8 @@ function inputProps (props) {
   return {
     ...props,
     id: `${props.key}-field`,
-    name: `${props.key}-field`
+    name: `${props.key}-field`,
+    onkeyup: (e) => { console.log(e.currentTarget.value) }
   }
 }
 

@@ -1,27 +1,43 @@
 <!DOCTYPE html>
 <html>
+
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <title></title>
     <script src="./dist/toguro.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/corgicss/css/corgi.css" type="text/css" media="screen" charset="utf-8">
+
+    <link rel="stylesheet" href="../corgi/css/corgi.css" type="text/css" media="screen" charset="utf-8">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.11.0/themes/prism.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/CodeFlask.js/0.2.0/codeflask.min.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.11.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/CodeFlask.js/0.1.1/codeflask.min.js"></script>
+
+    <style type="text/css" media="screen">
+      #left-panel { 
+        padding-top: 50px;
+        background: #eee;
+        border-right: 2px dashed gray;
+      }
+
+      #schema {
+        height: 100vh;
+        width: 100%;
+        position: relative;
+        background: #eee;
+      }
+      .CodeFlask__code { padding: 0px !important }
+    </style>
   </head>
+
   <body>
-    <div class="container">
-      <div class="columns">
-        <div class="column">
-          <form class="form" accept-charset="utf-8">
-            <fieldset id="" class="">
-              <textarea id="schema-text" style="height: 80vh">
-              </textarea>
-            </fieldset>
-          </form> 
-          <button class="button -primary" id="generate">Generate ----></button>
-        </div>
-        <div class="column">
-          <div id="form-mount" style="width: 600px; margin: 70px auto"></div>
-        </div>
+    <div class="columns -unpadded">
+      <div id="left-panel" class="column">
+        <div id="schema"></div>
+      </div>
+      <div class="column">
+        <div id="form-mount" style="width: 600px; margin: 70px auto"></div>
       </div>
     </div>
 
@@ -55,30 +71,25 @@
         ]
       }
 
-      var textArea = document.querySelector("#schema-text")
-      var jsonSchema = JSON.stringify(schema, undefined, 2).replace('<br>', /\r?\n/g)
-      textArea.value = jsonSchema
+      document.querySelector('#schema').innerHTML = JSON.stringify(schema, null, 2)
+
+      var flask = new CodeFlask;
+      flask.run('#schema', {language: 'json'});
+
 
       var submitHandler = function(formData) {
         alert(JSON.stringify(formData, undefined, 2))
       }
 
       var el = document.getElementById('form-mount')
-      toguro.render(el, {
+      var toguro = new Toguro({
         schema: schema,
-        submitHandler: submitHandler
+        submit: submitHandler
       });
 
+      toguro.renderTo(el)
+
       var generate = document.querySelector("#generate")
-      generate.onclick = function(e) {
-        el.innerHTML = ""
-        toguro.render(el, {
-          schema: JSON.parse(textArea.value),
-          submitHandler: submitHandler
-        })
-      }
-
-
     </script>
   </body>
 </html>
